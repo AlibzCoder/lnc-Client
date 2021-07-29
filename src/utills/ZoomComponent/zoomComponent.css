@@ -1,0 +1,31 @@
+.zoom-component{
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    background: rgb(0 0 0 / 0.8);
+    backdrop-filter: blur(7.5px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    top: -150%;
+    left: 0;
+    transition: all .35s;
+    z-index: 1000000;
+}
+.zoom-img{
+    width: 85vw;
+}
+.zoom-img .image-loader{
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.zoom-component-back{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+}

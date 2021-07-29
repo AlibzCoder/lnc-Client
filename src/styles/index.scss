@@ -1,0 +1,165 @@
+@import "vars";
+@font-face{
+  font-family: 'IranSans';
+  src: local('IranSans') , url(../assets/fonts/IRANSansWeb.ttf) format('truetype');
+}
+*:not(i){
+  font-family: 'IranSans' !important
+}
+
+::selection { background: $primaryLight; color: #FFF;}
+
+html,body,#root{
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  margin: 0;
+  color: $textColor;
+}
+
+*{
+  outline: none;
+  list-style: none;
+  text-decoration: none;
+  box-sizing: border-box;
+}
+
+
+
+h1:first-child,
+h2:first-child,
+h3:first-child,
+h4:first-child,
+h5:first-child {
+  margin: 0;
+  line-height: 1;
+}
+
+
+span{color: $textColorLight;font-size: 0.8rem;}
+span.error{color: $error;display: block;}
+
+
+.t-indent-1{text-indent: 1.5%;}
+.t-indent-2{text-indent: 2.5%;}
+.t-indent-5{text-indent: 5%;}
+
+
+a,.disabled-url{
+  opacity: 0.8;
+  line-height: 1;
+  border-bottom: 1px solid currentColor;
+  font-size: 0.8rem;
+  transition: color .4s;
+}
+
+a{color: $primaryLight;}
+a:hover{opacity: 1;}
+a:active{color: $primary;}
+
+
+
+.disabled-url{color: $disabled;cursor: not-allowed;}
+
+
+
+
+.flex-center{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.flex-sb-center{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+
+.inset-neumorphic-shadow,.flat-neumorphic-shadow{
+  background-color: $backgroundLight;
+}
+.flat-neumorphic-shadow{
+  box-shadow:  6px 6px 12px #dedfea, -6px -6px 12px #f6f7ff;;
+}
+.inset-neumorphic-shadow{
+  box-shadow: inset 5px 5px 10px #dcdde7,inset -5px -5px 10px #f8f9ff;
+}
+
+
+.page{
+  background-color: $backgroundLight;
+  width: 100%;
+  min-height: 100vh;
+}
+
+.page-header {
+  width: 100%;
+  height: 6.5vh;
+}
+
+
+
+
+
+
+
+.input{
+  border-radius: 8px;
+  transition: background .4s,border .4s;
+}
+
+.input input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  padding: 0;
+  font-size: 0.95rem;
+  height: 2.15em;
+  padding: 2px 7px;
+  caret-color:$primaryLight;
+}
+.input.input-icon {
+  display: flex;
+  align-items: center;
+  padding-left: 7px;
+}
+.input.input-icon input {
+  padding: 3px 5px 0;
+}
+
+.input.input-error{
+  background: rgba($error,0.05);
+  border: 1px solid rgba($error,0.3);
+}
+
+
+
+
+.MuiButton-containedPrimary{
+  background-color: $primary !important;
+  color: #FFF;
+  > span{
+    color: currentColor;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+
+
+
+
+
+
+.Shimmer-shimmer-1-1-1 {
+  display: inline-block;
+  animation: shimmerAnim 2s infinite linear;
+  background: #f2f2f2;
+  background-size: 200% 100% !important;
+  background-image: linear-gradient(to right,#eeeeee 20%,#DDDDDD 45%,#eeeeee 85%) !important;
+  background-repeat: no-repeat;
+}
+

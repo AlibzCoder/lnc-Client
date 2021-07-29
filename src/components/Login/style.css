@@ -1,0 +1,46 @@
+.login-page{
+    flex-direction: row-reverse;
+}
+.login-page .login-vector{
+    width: 40%;
+    margin-left: 5%;
+}
+
+.login-form{
+    width: 20%;
+    min-height: 25vh;
+    position: relative;
+}
+
+.login-form .flat-neumorphic-shadow{
+    border-radius: 15px;
+    padding:1.25em;
+}
+
+
+.login-form .error{
+    margin: 0 0 1.25rem;
+}
+
+.login-form button {
+    width: calc(100% - 1.5em);
+    display: block;
+    margin: 0 0.75em;
+    font-size: 1rem;
+}
+
+
+
+.login-form .sign-in-form,
+.login-form .sign-up-form{
+    position: absolute;
+    transform: translateY(2em);
+    transition: all .4s .4s;
+    opacity: 0;
+    z-index: -1;
+    right: 0;
+    left: 0;
+}
+
+.login-form.sign-in .sign-in-form{transform: none;opacity: 1;z-index: 1;}
+.login-form.sign-up .sign-up-form{transform: none;opacity: 1;z-index: 1;}

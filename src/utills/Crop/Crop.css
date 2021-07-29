@@ -1,0 +1,127 @@
+.crop-modal .ant-modal-body{
+    min-height: 300px;
+    position: relative;
+    overflow: hidden;
+}
+
+
+.crop-box{
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    left: 0;
+    z-index: 999999;
+    transition: all .6s;
+    top: -150%;
+}
+.crop-back{
+    backdrop-filter: blur(3.5px);
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    z-index: -1;
+}
+.crop-header {
+    display: grid;
+    grid-template-columns: 10% auto 10%;
+    align-items: center;
+    padding: 2.5% 3%;
+    position: relative;
+    z-index: 1;
+}
+.crop-header h4 {
+    display: flex;
+    height: 100%;
+    margin: 0;
+    text-indent: 1em;
+    direction: rtl;
+    align-items: center;
+    font-family: 'IranSans';
+    font-size: 1.15rem;
+    color: #FFF;
+}
+.crop-header i {
+    line-height: 1;
+    width: 100%;
+    height: 30px;
+    margin: 0;
+    color: #FFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+.crop-header .ui.inverted.loader{
+    left: auto;
+    right: 0;
+    width: 5vw;
+    height: 5vw;
+}
+.crop-header .ui.loader:after,
+.crop-header .ui.loader:before {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    left: 0;
+    top: 0;
+}
+
+
+.crop-body{
+    height: 100%;
+    width: 100%;
+    position: relative;
+}
+.crop-rotation{
+    width: 100%;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    color: #FFF;
+}
+.crop-rotation-right, .crop-rotation-left {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    filter: drop-shadow(0 0 10px black);
+}
+.crop-rotation-right i, .crop-rotation-left i{
+    margin: 0.75rem 0;  
+    font-size: 1.5rem;  
+}
+.crop-rotation-left i {
+    transform: rotateY(180deg);
+    backface-visibility: visible;
+}
+.crop-box-active{
+    top: 0;
+}
+
+
+
+
+.crop-aspect-control{
+    display: grid;
+    width: 100%;
+    grid-template-columns: 15% 15% 15% 15%;
+    justify-content: center;
+    position: absolute;
+    bottom: 12.5%;
+}
+.crop-aspect-control-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 15%;
+    color: #FFF;
+    font-weight: bold;
+}
+.crop-aspect-control-item div {
+    border: 2px solid;
+    transition: all .2s;
+}
+
+.crop-aspect-control-item-selected div{background-color: #FFF;}
+
+.reactEasyCrop_CropArea{transition: all .2s;}
