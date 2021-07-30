@@ -1,3 +1,5 @@
+@import '../../styles/vars';
+
 .main-page{
     display: grid;
     grid-template-columns: 21.35vw auto 21.35vw;
@@ -6,20 +8,34 @@
 .main-chats-list,
 .main-chat-box,
 .main-current-chat-info{
-    padding: 1.5em;
+    padding: 0 1.5em;
 }
 
+
+
+.main-chats-list{
+    display: grid;
+    grid-template-rows: 42vh calc(58vh - 2em);
+}
 
 .main-user-profile{
     text-align: center;
-    margin-top: 1em;
+    margin-top: 0.5em;
+    position: relative;
+    .icon-btn {
+        position: absolute;
+        top: 0;right: 0.5em;
+    }
 }
+
+
+
 .profile-image {
-    width: 12.5vw;
-    height: 12.5vw;
+    width: 10vw;
+    height: 10vw;
     border-radius: 50%;
     display: inline-block;
-    margin-bottom: 1em;
+    margin-bottom: 0.5em;
     padding: 0.75em;
     img{
         width: 100%;
@@ -28,7 +44,67 @@
 }
 
 
-.main-chat-list-box .input{
+
+
+
+.main-chats-list .input{
     width: 90%;
-    margin: 0 auto;
+    margin: 0 auto 2em;
+}
+.main-chat-list-box h6 {
+    margin-top: 1em;
+}
+
+
+
+.main-chat-list-item{
+    padding: 0.5em ;
+    margin: 0.5em;
+    display: grid;
+    grid-template-columns: 3.75em auto;
+    align-items: center;
+    border-radius: 16px;
+    position: relative;
+    cursor: pointer;
+    transition: background-color .4s;
+    &:hover{
+        background-color: rgba($primary, $alpha: 0.1);
+    }
+
+    .main-chat-list-item-time{
+        position: absolute;
+        top: 0.75em;
+        right: 0.75em;
+        opacity: 0.8;
+    }
+
+    .main-chat-list-item-img{
+        width: 3.75em;
+        height: 3.75em;
+        img{
+            border: 3px solid #fff;
+            width: 100%;
+            border-radius: 50%;
+        }
+    }
+
+    .main-chat-list-item-info{
+        display: grid;
+        align-items: center;
+        height: 75%;
+        padding: 0 4%;
+        h4{font-weight: lighter;width: 85%;}
+        span{line-height: 1;}
+        h4,span{
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    }
+}
+
+.main-chat-list-item-selected{
+    background-color: rgba($primary,0.8);
+    &:hover{background-color: rgba($primary,0.8);}
+    *{color: #FFF;}
 }
