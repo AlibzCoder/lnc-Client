@@ -1,12 +1,30 @@
 import { IconButton } from '@material-ui/core';
 import { ChevronLeft, Settings } from '@material-ui/icons';
+import { useContext } from 'react';
 import { Scrollbars } from 'react-custom-scrollbars-2';
+import { SocketIoContext } from '../../api/socket-io';
 import userImage from '../../assets/images/45936439.jpg'
 import Input from '../../utills/Input';
 import RippleLayout from '../../utills/RippleLayout';
 import './style.scss'
 
 const Main = props => {
+
+
+   const socketIo = useContext(SocketIoContext);
+
+    console.log(socketIo)
+
+
+
+
+
+
+
+
+
+
+
     return <div className="page main-page">
         <div className="main-chats-list">
             <div>

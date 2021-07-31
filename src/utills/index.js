@@ -120,7 +120,9 @@ export const useEvent = (callback,event)=>{
       return ()=>{document.removeEventListener(event,eventListener)}
   },[])
 }
-
+const dispatchEvent = (eventName,payload=null)=>{
+  document.dispatchEvent(new CustomEvent(eventName,{detail:payload}))
+}
 
 
 const OpenIndexedDB = ()=>{
