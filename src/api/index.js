@@ -4,11 +4,25 @@ import {apiBaseUrl} from '../consts';
 import {getCookie,setCookie} from '../utills'
 
 
-let Authorization
-let RefreshToken
 
 const instance = axios.create({baseURL : apiBaseUrl});
 const refreshTokenApi = axios.create({baseURL : apiBaseUrl});
+
+
+export const callRefresh = ()=>new Promise((resolve,reject)=>{
+  let Authorization = getCookie("Authorization")
+  let RefreshToken = getCookie("RefreshToken")
+  if(Authorization&&RefreshToken){
+    let headers = {"Authorization": Authorization,"RefreshToken": RefreshToken}
+    refreshTokenApi.post('/refreshToken', null, { "headers": headers }).then(res=>{
+      var oneYearFromNow = new Date();
+      oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1);
+      setCookie("Authorization", res.data.Authorization,oneYearFromNow)
+      resolve(res.data.Authorization)
+    }).catch(err=>reject(err))
+  }else{reject(null)}
+})
+
 
 
 const use_ = function(onFullfilled, onRejected) {
@@ -36,8 +50,6 @@ const interceptorCatchError = (error)=>{return Promise.reject(error);};
 
 
 
-
-
 let isRefreshing = false;
 let failedQueue = [];
 const processQueue = (error, token = null) => {
@@ -59,7 +71,6 @@ const onResponse = (res)=>{
   return res;
 }
 const onError = (err)=>{
-  console.log(err);
   if (err.response && err.response.status === 401) {
     const originalRequest = err.config;
     if(!originalRequest._retry){
@@ -74,42 +85,18 @@ const onError = (err)=>{
       originalRequest._retry = true;
       isRefreshing = true;
 
-      Authorization = getCookie("Authorization")
-      RefreshToken = getCookie("RefreshToken")
-
-      if(Authorization&&RefreshToken){
-        let headers = {
-          "Authorization": Authorization,
-          "RefreshToken": RefreshToken
-        }
-        return new Promise(function(resolve, reject) {
-          refreshTokenApi.post('/identity/v1/Authorize/AuthRefreshToken', null, { "headers": headers }).then(response => {
-            Authorization = response.Authorization
-            RefreshToken = response.RefreshToken
-  
-            var oneYearFromNow = new Date();
-            oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1);
-  
-            setCookie("Authorization", Authorization,oneYearFromNow)
-            setCookie("RefreshToken", RefreshToken,oneYearFromNow)
-  
-  
-  
-            instance.defaults.headers.common['Authorization'] = Authorization;
-            originalRequest.headers['Authorization'] = Authorization;
-            processQueue(null, Authorization);
-            resolve(instance(originalRequest));
-  
-            //instance.request(err.response.config);
-          }).catch(err => {
-            processQueue(err, null);
-            document.dispatchEvent(new CustomEvent('CALL_LOGOUT'))
-            reject(err);
-          }).then(() => {isRefreshing = false;});
-        });
-      }else{
-        history.push('/Login') // Go to login Page
-      }
+      return new Promise(function(resolve, reject) {
+        callRefresh().then(auth => {
+          instance.defaults.headers.common['Authorization'] = auth;
+          originalRequest.headers['Authorization'] = auth;
+          processQueue(null, auth);
+          resolve(instance(originalRequest));
+        }).catch(err => {
+          processQueue(err, null);
+          document.dispatchEvent(new CustomEvent('CALL_LOGOUT'))
+          reject(err);
+        }).then(() => {isRefreshing = false;});
+      });
     }
   }
   return Promise.reject(err);

@@ -1,9 +1,10 @@
 import { IconButton } from '@material-ui/core';
 import { ChevronLeft, Settings } from '@material-ui/icons';
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import { Scrollbars } from 'react-custom-scrollbars-2';
 import { SocketIoContext } from '../../api/socket-io';
 import userImage from '../../assets/images/45936439.jpg'
+import { Profile } from '../../redux/actions';
 import Input from '../../utills/Input';
 import RippleLayout from '../../utills/RippleLayout';
 import './style.scss'
@@ -11,14 +12,21 @@ import './style.scss'
 const Main = props => {
 
 
+/*
+
+TODO : connect profile to redux and make socket connections manual 
+    socket should only connects when profile is loaded  
+
    const socketIo = useContext(SocketIoContext);
 
     console.log(socketIo)
 
 
 
-
-
+    useEffect(()=>{
+        Profile().then(res=>{console.log(res)})
+    },[])
+*/
 
 
 

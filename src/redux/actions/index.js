@@ -42,3 +42,15 @@ export const Logout = () => (dispatch)=>{
 
 
 
+export const Profile = () => {
+    return api.get('/profile').then((res)=>{
+        console.log(res)
+    })
+    .catch((err)=>{
+
+    });
+}
+
+
+
+
