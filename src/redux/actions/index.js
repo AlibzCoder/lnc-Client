@@ -1,4 +1,4 @@
-import {LOGIN_STATE, USER_LOGOUT} from '../types';
+import {LOGIN_STATE, USER_INFO, USER_LOGOUT} from '../types';
 import api from '../../api';
 import {setCookie, deleteAllCookies} from '../../utills';
 import history from '../../history';
@@ -42,15 +42,43 @@ export const Logout = () => (dispatch)=>{
 
 
 
-export const Profile = () => {
-    return api.get('/profile').then((res)=>{
-        console.log(res)
-    })
-    .catch((err)=>{
+export const Profile = () => stateFullDataRevicer(api,USER_INFO,'/profile')
 
-    });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const emptyState = (actionType)=>async(dispatch)=>{
+    dispatch({type:`EMPTY_${actionType}`})
 }
-
-
+const stateFullDataRevicer = (instance,actionType,url,defualtData = null)=>async(dispatch)=>{
+    dispatch(payload(1,defualtData,actionType))
+    return instance.get(url).then((res)=>{dispatch(payload(2,res.data,actionType))})
+    .catch(()=>{dispatch(payload(0,defualtData,actionType))});
+}
+const payload = (state,data,action) => {return {type:action,payload:{state:state,data:data}}}
 
 

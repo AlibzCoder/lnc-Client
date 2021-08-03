@@ -2,6 +2,7 @@ import { IconButton } from '@material-ui/core';
 import { ChevronLeft, Settings } from '@material-ui/icons';
 import { useContext, useEffect } from 'react';
 import { Scrollbars } from 'react-custom-scrollbars-2';
+import { connect } from 'react-redux';
 import { SocketIoContext } from '../../api/socket-io';
 import userImage from '../../assets/images/45936439.jpg'
 import { Profile } from '../../redux/actions';
@@ -23,9 +24,7 @@ TODO : connect profile to redux and make socket connections manual
 
 
 
-    useEffect(()=>{
-        Profile().then(res=>{console.log(res)})
-    },[])
+    
 */
 
 
@@ -134,4 +133,14 @@ TODO : connect profile to redux and make socket connections manual
         </div>
     </div>
 }
-export default Main;
+const mapStateToProps = state => {
+    return {
+        Profile:state.Profile
+    }
+}
+const mapDispatchToProps = dispatch => {
+    return {
+        
+    }
+}
+export default connect(mapStateToProps,mapDispatchToProps)(Main);
