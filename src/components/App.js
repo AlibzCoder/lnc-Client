@@ -12,7 +12,6 @@ import { useEffect, useState } from 'react';
 import innitSocket, { SocketIoContext } from '../api/socket-io'
 
 const App = (props) => {
-    console.log(props);
 
     const {cookies} = props;
 

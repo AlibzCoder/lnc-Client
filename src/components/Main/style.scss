@@ -59,7 +59,7 @@
 
 .main-chat-list-item{
     padding: 0.5em ;
-    margin: 0.5em;
+    margin: 0 0.5em;
     display: grid;
     grid-template-columns: 3.75em auto;
     align-items: center;
@@ -81,10 +81,31 @@
     .main-chat-list-item-img{
         width: 3.75em;
         height: 3.75em;
+        position: relative;
         img{
             border: 3px solid #fff;
             width: 100%;
             border-radius: 50%;
+        }
+
+        &::after{
+            content: ' ';
+            position: absolute;
+            right: 7.5%;
+            bottom: 7.5%;
+            width: 0.5em;
+            height: 0.5em;
+            background-color: $primary;
+            border-radius: 50%;
+            border: 0.125em solid #FFF;
+            opacity: 0;
+            transform: scale(0);
+            transition: all .4s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+        }
+
+        &.main-chat-list-item-online::after{
+            transform: scale(1);
+            opacity: 1;
         }
     }
 
@@ -103,8 +124,11 @@
     }
 }
 
+
+
 .main-chat-list-item-selected{
     background-color: rgba($primary,0.8);
     &:hover{background-color: rgba($primary,0.8);}
     *{color: #FFF;}
 }
+

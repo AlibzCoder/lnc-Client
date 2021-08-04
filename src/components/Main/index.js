@@ -3,29 +3,29 @@ import { ChevronLeft, Settings } from '@material-ui/icons';
 import { useContext, useEffect } from 'react';
 import { Scrollbars } from 'react-custom-scrollbars-2';
 import { connect } from 'react-redux';
-import { SocketIoContext } from '../../api/socket-io';
 import userImage from '../../assets/images/45936439.jpg'
-import { Profile } from '../../redux/actions';
+import { useTransition, animated } from 'react-spring';
 import Input from '../../utills/Input';
 import RippleLayout from '../../utills/RippleLayout';
 import './style.scss'
+import { useState } from 'react';
+
+
+
+const user_item_height = 76;//3.75em + (1em padding + 1em margin) => 1em = 16px
 
 const Main = props => {
 
+    const transitions = useTransition(props.Users.map((data, i) => ({ ...data, y: i * user_item_height })),
+        {
+            key: item => item._id,
+            from: { height: 0, opacity: 0 },
+            leave: { height: 0, opacity: 0 },
+            enter: ({ y, height }) => ({ y, height, opacity: 1 }),
+            update: ({ y, height }) => ({ y, height }),
+        }
+    )
 
-/*
-
-TODO : connect profile to redux and make socket connections manual 
-    socket should only connects when profile is loaded  
-
-   const socketIo = useContext(SocketIoContext);
-
-    console.log(socketIo)
-
-
-
-    
-*/
 
 
 
@@ -58,11 +58,28 @@ TODO : connect profile to redux and make socket connections manual
                 />
             </div>
             <div className="main-chat-list-box">
-                <Scrollbars autoHide autoHideTimeout={600} autoHideDuration={200}>
-                    <h6 className="t-indent-2">Online</h6> <hr />
+                <Scrollbars autoHide autoHideTimeout={600} autoHideDuration={200} height={props.Users.length*user_item_height}>
 
-                    
-                    <RippleLayout className="main-chat-list-item">
+                    {transitions((style, user, t, index) => (
+                        <animated.div style={{ zIndex: props.Users.length - index, ...style }}>
+                            {console.log(user)}
+                            <RippleLayout className="main-chat-list-item">
+                                <div className={`main-chat-list-item-img ${user.isOnline?'main-chat-list-item-online':''}`}>
+                                    <img src={userImage} />
+                                </div>
+                                <div className="main-chat-list-item-info jc-sp-e fd-column">
+                                    <h4>{user.name}</h4>
+                                    <span>hey how you doin, you good?</span>
+                                </div>
+                                <span className="main-chat-list-item-time">07:11</span>
+                            </RippleLayout>
+                        </animated.div>
+                    ))}
+
+
+
+
+                    {/* <RippleLayout className="main-chat-list-item main-chat-list-item-selected">
                         <div className="main-chat-list-item-img">
                             <img src={userImage} />
                         </div>
@@ -71,53 +88,11 @@ TODO : connect profile to redux and make socket connections manual
                             <span>hey how you doin, you good?</span>
                         </div>
                         <span className="main-chat-list-item-time">07:11</span>
-                    </RippleLayout>
+                    </RippleLayout> */}
 
-                    <RippleLayout className="main-chat-list-item main-chat-list-item-selected">
-                        <div className="main-chat-list-item-img">
-                            <img src={userImage} />
-                        </div>
-                        <div className="main-chat-list-item-info jc-sp-e fd-column">
-                            <h4>Ali Banai</h4>
-                            <span>hey how you doin, you good?</span>
-                        </div>
-                        <span className="main-chat-list-item-time">07:11</span>
-                    </RippleLayout>
 
-                    <RippleLayout className="main-chat-list-item">
-                        <div className="main-chat-list-item-img">
-                            <img src={userImage} />
-                        </div>
-                        <div className="main-chat-list-item-info jc-sp-e fd-column">
-                            <h4>Ali Banai</h4>
-                            <span>hey how you doin, you good?</span>
-                        </div>
-                        <span className="main-chat-list-item-time">07:11</span>
-                    </RippleLayout>
 
-                    <RippleLayout className="main-chat-list-item">
-                        <div className="main-chat-list-item-img">
-                            <img src={userImage} />
-                        </div>
-                        <div className="main-chat-list-item-info jc-sp-e fd-column">
-                            <h4>Ali Banai</h4>
-                            <span>hey how you doin, you good?</span>
-                        </div>
-                        <span className="main-chat-list-item-time">07:11</span>
-                    </RippleLayout>
 
-                    <h6 className="t-indent-2">Offline</h6> <hr />
-
-                    <RippleLayout className="main-chat-list-item">
-                        <div className="main-chat-list-item-img">
-                            <img src={userImage} />
-                        </div>
-                        <div className="main-chat-list-item-info jc-sp-e fd-column">
-                            <h4>Ali Banai</h4>
-                            <span>hey how you doin, you good?</span>
-                        </div>
-                        <span className="main-chat-list-item-time">07:11</span>
-                    </RippleLayout>
                 </Scrollbars>
             </div>
 
@@ -135,12 +110,13 @@ TODO : connect profile to redux and make socket connections manual
 }
 const mapStateToProps = state => {
     return {
-        Profile:state.Profile
+        Profile: state.Profile,
+        Users: state.Users
     }
 }
 const mapDispatchToProps = dispatch => {
     return {
-        
+
     }
 }
-export default connect(mapStateToProps,mapDispatchToProps)(Main);
+export default connect(mapStateToProps, mapDispatchToProps)(Main);

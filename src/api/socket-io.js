@@ -14,7 +14,7 @@ const innitSocket = (auth,dispatch) => {
             case 'UserNotFound':
             case 'TokenMissingError':
             case 'NotBeforeError':
-            case 'JsonWebTokenError':dispatchEvent('CALL_LOGOUT');break;
+            case 'JsonWebTokenError':document.dispatchEvent(new CustomEvent('CALL_LOGOUT'));break;
             case 'InternalError': console.log(err);break;
             case 'TokenExpiredError':callRefresh().then(token=>{
                 socket.io.opts.query = {token:token};
@@ -26,12 +26,13 @@ const innitSocket = (auth,dispatch) => {
     socket.on('connect',()=>{
         console.log('Connected');
         socket.emit('getAllUsers')
-        socket.on('users',data=>{
-            dispatch({type:ALL_USERS,users:data})
-        })
-        socket.on('usersChange',data=>console.log(data))
     })
+    socket.on('users',data=>dispatch({type:ALL_USERS,users:data}))
+    socket.on('usersChange',data=>dispatch(data))
 
     return socket;
 };
+
+
+
 export default innitSocket;
