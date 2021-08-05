@@ -31,7 +31,7 @@ const App = (props) => {
     },[props.Profile,pathname])
     useEvent(props.Logout, 'CALL_LOGOUT')
 
-
+    console.log(cookies.get("Authorization"))
 
     return (
         <SocketIoContext.Provider value={socketIO}>

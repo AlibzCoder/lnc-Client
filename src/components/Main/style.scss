@@ -13,9 +13,37 @@
 
 
 
-.main-chats-list{
-    display: grid;
-    grid-template-rows: 42vh calc(58vh - 2em);
+.main-chats-list,
+.main-user-profile-box,
+.main-chat-list-box{
+    display: flex;
+    flex-direction: column;
+}
+.main-chat-list-box,
+.main-user-profile{
+    flex-grow: 1;
+}
+
+
+
+.main-user-profile-box{
+    transition: flex .4s;
+    overflow: hidden;
+    border-bottom: 1px rgba($disabled,0.35) solid;
+    padding-bottom: 0.75em;
+    margin: 0 0.5em;
+}
+
+.main-chat-list-box{padding-top: 0.75em;}
+
+
+
+
+
+.main-user-profile-edit {
+    position: absolute;
+    right: 0;
+    left: 0;
 }
 
 .main-user-profile{
@@ -31,12 +59,12 @@
 
 
 .profile-image {
-    width: 10vw;
-    height: 10vw;
+    width: 8vw;
+    height: 8vw;
     border-radius: 50%;
     display: inline-block;
     margin-bottom: 0.5em;
-    padding: 0.75em;
+    padding: 0.5em;
     img{
         width: 100%;
         border-radius: 50%;
@@ -49,10 +77,7 @@
 
 .main-chats-list .input{
     width: 90%;
-    margin: 0 auto 2em;
-}
-.main-chat-list-box h6 {
-    margin-top: 1em;
+    margin: 1em auto 1em;
 }
 
 
@@ -131,4 +156,13 @@
     &:hover{background-color: rgba($primary,0.8);}
     *{color: #FFF;}
 }
+
+
+
+
+
+
+
+
+
 

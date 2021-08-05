@@ -60,6 +60,7 @@ hr{
   width: 100%;
   height: 1px;
   border: none;
+  margin: 0;
 }
 
 
@@ -115,39 +116,45 @@ hr{
 
 
 
-
-
-
-
 .input{
   border-radius: 8px;
   transition: background .4s,border .4s;
+
+  .MuiInputBase-root{ width: 100%;}
+
+  input {
+    font-size: 0.95rem;
+    height: 2.15em;
+    caret-color:$primaryLight;
+  }
+
+  &.input-icon {
+    display: flex;
+    align-items: center;
+    padding-left: 7px;
+  }
+  &.input-icon input {
+    padding: 3px 5px 0;
+  }
+
+  &.input-multiline{
+    align-items: flex-start;
+    padding: 6px 6px 7px;
+    .MuiInputBase-multiline {
+      padding:0;
+    }
+    textarea{padding: 0 3px 0;}
+  }
+
+
+  &.input-error{
+    background: rgba($error,0.05);
+    border: 1px solid rgba($error,0.3);
+  }
 }
 
-.input input {
-  width: 100%;
-  background: transparent;
-  border: none;
-  outline: none;
-  padding: 0;
-  font-size: 0.95rem;
-  height: 2.15em;
-  padding: 2px 7px;
-  caret-color:$primaryLight;
-}
-.input.input-icon {
-  display: flex;
-  align-items: center;
-  padding-left: 7px;
-}
-.input.input-icon input {
-  padding: 3px 5px 0;
-}
 
-.input.input-error{
-  background: rgba($error,0.05);
-  border: 1px solid rgba($error,0.3);
-}
+
 
 
 
@@ -165,9 +172,26 @@ hr{
 
 
 .icon-btn {
-  padding: 8px;
   font-size: 1.75rem;
+  &.icon-btn-toggle-icon{
+    padding: 16px;
+  }
 }
+
+
+.toggle-icon{
+  width: 100%;
+  height: 100%;
+  position: relative;
+  *{
+    position: absolute;
+    transition: all .4s;
+    opacity: 0;
+  }
+  .toggle-icon-active{opacity: 1;}
+}
+
+
 
 
 

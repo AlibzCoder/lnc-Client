@@ -83,8 +83,8 @@ const Login = props => {
         if(!userName){
             setUserNameError('Please Enter Your User Name');
             usernameValid = false;
-        }else if(callback!=="login"&&!userName.match(/^[A-Za-z][A-Za-z0-9_]{3,29}$/)){
-            setUserNameError('User Name Should Start with EN alphabet and at least be 4 characters');
+        }else if(callback!=="login"&&!userName.match(/^[A-Za-z][A-Za-z0-9_]{3,30}$/)){
+            setUserNameError('User Name Should Start with EN alphabet and at least be 3 characters');
             usernameValid = false;
         }else{setUserNameError('')}
 
