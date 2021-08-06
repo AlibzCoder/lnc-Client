@@ -44,7 +44,23 @@
     position: absolute;
     right: 0;
     left: 0;
+
+    .input{
+        transition: opacity .4s,transform .4s;
+        opacity: 0;
+        transform: scale(0.85);
+    }
+
+    &.main-user-profile-edit-active{
+        .input{
+            opacity: 1;
+            transform: none;
+        }
+    }
 }
+
+
+
 
 .main-user-profile{
     text-align: center;
@@ -63,11 +79,37 @@
     height: 8vw;
     border-radius: 50%;
     display: inline-block;
-    margin-bottom: 0.5em;
     padding: 0.5em;
     img{
         width: 100%;
         border-radius: 50%;
+    }
+
+
+    .profile-image-edit{
+        background-color: rgba($primary,0.75);
+        backdrop-filter: blur(5px);
+        border-radius: 50%;
+        font-size: 1.5rem;
+        transition: opacity .4s;
+        color: #FFF;
+        opacity: 0;
+        cursor: pointer;
+        &:hover{
+            opacity: 1;
+        }
+    }
+}
+
+
+.main-user-profile-name{
+    width: 100%;
+    text-align: center;
+    position: absolute;
+    transition: all .4s;
+    &.main-user-profile-name-hidden{
+        opacity: 0;
+        transform: scale(0.925);
     }
 }
 
@@ -107,11 +149,8 @@
         width: 3.75em;
         height: 3.75em;
         position: relative;
-        img{
-            border: 3px solid #fff;
-            width: 100%;
-            border-radius: 50%;
-        }
+        border: 3px solid #fff;
+        border-radius: 50%;
 
         &::after{
             content: ' ';
@@ -145,6 +184,7 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            line-height: 1.25;
         }
     }
 }

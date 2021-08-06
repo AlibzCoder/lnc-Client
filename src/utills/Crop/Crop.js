@@ -138,10 +138,10 @@ const Crop = (props) => {
       <div className="crop-back"></div>
       <div className="crop-body">
         <div className="crop-header">
-          <Button style={{minWidth: 'unset',color:'#FFF'}} variant="text" onClick={handleCancel}><CloseIcon/></Button>
+          <Button  variant="text" style={{minWidth: 'unset'}} onClick={handleCancel}><CloseIcon style={{color:'#FFF'}}/></Button>
           <h4>{props.modalTitle}</h4>
           
-          {(!loading)?(<Button style={{minWidth: 'unset',color:'#FFF'}} variant="text" onClick={handleOk}><CheckIcon/></Button>):(<div className="flex-center"><CircularProgress size="1rem" color="secondary" /></div>)}
+          {(!loading)?(<Button style={{minWidth: 'unset'}} variant="text" onClick={handleOk}><CheckIcon style={{color:'#FFF'}}/></Button>):(<div className="flex-center" style={{color:'#FFF'}}><CircularProgress size="1rem" color="inherit" /></div>)}
         </div>
         <Cropper
           image={imageSrc}

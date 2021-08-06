@@ -1,6 +1,6 @@
 const INITAL_STATE = {
     state: 0,
-    data:null
+    data:{}
 }
 export default (actionType) => (state = INITAL_STATE , action) => {
     switch (action.type) {

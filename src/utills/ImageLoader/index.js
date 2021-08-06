@@ -1,66 +1,88 @@
-import React, {Suspense,useState} from 'react'
+import * as React from 'react';
 
+type Props = {
+  src: string,
+  style: any,
+  className?: string,
+  onLoad?: (img: Image) => void,
+  onError?: (err: Event) => void,
+  loading?: () => React.Element<*>,
+  error?: (err: Event) => React.Element<*>
+}
 
-class ErrorBoundary extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { hasError: false };
+type State = {
+  isLoading: boolean,
+  isError: boolean,
+  src: ?string,
+  errMsg: ?any
+}
+
+export default class ImageLoader extends React.PureComponent<Props, State> {
+  state = {
+    isLoading: true,
+    isError: false,
+    src: null,
+    errMsg: null
   }
 
-  static getDerivedStateFromError(error) {
-    return { hasError: true };
+  componentWillReceiveProps(nextProps: Props) {
+    // reload only when image src is changed.
+    if (this.props.src !== nextProps.src)
+      this.reload(nextProps);
   }
-  componentDidCatch(error, errorInfo) {
-    //console.log(error)
-    //console.log(errorInfo)
+
+  componentDidMount() {
+    this.reload(this.props);
+  }
+
+  reload = (props: Props) => {
+    // initialize
+    this.setState({
+      isLoading: true,
+      isError: false,
+      src: null,
+      errMsg: null
+    });
+
+    const image = new Image();
+
+    image.src = props.src;
+    image.onload = () => {
+      this.setState({
+        src: image.src,
+        isLoading: false,
+        isError: false,
+        errMsg: null
+      });
+      if (props.onLoad) {
+        props.onLoad(image);
+      }
+    };
+    image.onerror = (err) => {
+      this.setState({
+        src: null,
+        isLoading: false,
+        isError: true,
+        errMsg: err
+      });
+      if (props.onError) {
+        props.onError(err);
+      }
+    }
   }
 
   render() {
-    return this.state.hasError ? this.props.fallback : this.props.children
+    const {loading, error, style, className} = this.props;
+    const {src, isLoading, isError, errMsg} = this.state;
+
+    if (loading && isLoading) {
+      return loading();
+    } else if (error && isError && errMsg) {
+      return error(errMsg);
+    } else if (src) {
+      return <img src={src} style={style} className={className} />
+    }
+
+    return null;
   }
 }
-
-const readImage = (src) => {
-  let img;
-  let status = 'loading';
-  let error;
-  const imgPromise = new Promise((resolve,reject) => {
-    img = new Image();
-    img.onload = () => {
-      status = 'done';
-      resolve(true)
-    };
-    img.onerror = (err) => {
-      error = err;
-      status = 'error';
-      reject(err);
-    };
-    img.src = src;
-  })
-  return () => {
-    if (status === 'loading') {
-      throw imgPromise;
-    } else if (status === 'error') {
-      throw error;
-    }
-    return img;
-  }
-};
-
-export const SuspenseImg = ({ src,readImage, ...rest }) => {
-    readImage()
-    return <img src={src} {...rest} />;
-};
-
-const ImageLoader = React.memo((props) =>{
-  const [imgReader] = useState(() => readImage(props.src));
-  return (
-    <ErrorBoundary fallback={props.unloader??<div></div>}>
-      <Suspense fallback={props.loader??<div></div>}>
-        <SuspenseImg src={props.src} readImage={imgReader} {...props.imgProps}  />
-      </Suspense>
-    </ErrorBoundary>
-  )
-},(prevProps,nextProps)=>{return prevProps.src === nextProps.src;})
-
-export default ImageLoader

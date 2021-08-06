@@ -2,6 +2,7 @@ import { connect } from 'react-redux';
 import ChatsList from './ChatsList';
 import UserProfile from './UserProfile';
 import './style.scss'
+import { CircularProgress } from '@material-ui/core';
 
 
 
@@ -13,7 +14,6 @@ const Main = props => {
             <ChatsList/>
         </div>
         <div className="main-chat-box">
-
         </div>
         <div className="main-current-chat-info">
 

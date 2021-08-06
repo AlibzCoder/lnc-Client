@@ -1,6 +1,6 @@
 import {LOGIN_STATE, USER_INFO, USER_LOGOUT} from '../types';
 import api from '../../api';
-import {setCookie, deleteAllCookies} from '../../utills';
+import {setCookie, deleteAllCookies, jsonToFormData} from '../../utills';
 import history from '../../history';
 
 
@@ -42,8 +42,19 @@ export const Logout = () => (dispatch)=>{
 
 
 
-export const Profile = () => stateFullDataRevicer(api,USER_INFO,'/profile')
 
+
+
+
+
+
+export const Profile = () => stateFullDataRevicer(api,USER_INFO,'/profile',{})
+export const EditProfile = ({name,description})=>{
+    return api.post('/editProfile',{name,description});
+}
+export const UploadProfileImg = (ProfileImg)=>{
+    return api.post('/uploadProfileImage',jsonToFormData({"profile_img":ProfileImg}));
+}
 
 
 

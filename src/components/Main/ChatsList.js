@@ -1,23 +1,56 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Scrollbars } from 'react-custom-scrollbars-2';
 import { useTransition, animated } from 'react-spring';
 import Input from '../../utills/Input';
 import RippleLayout from '../../utills/RippleLayout';
 
 
-import userImage from '../../assets/images/45936439.jpg'
 import { connect } from 'react-redux';
+import { imgsUrl } from '../../consts';
+import AspectRatio from '../../utills/AspectRatio';
+import ImageLoader from '../../utills/ImageLoader';
 
 const user_item_height = 76;//3.75em + (1em padding + 1em margin) => 1em = 16px
 
-const ChatsList = props => {
 
-    const { Users } = props;
+const ListItem = ({ user }) => {
 
-    const [list,setList] = useState(Users)
-    useEffect(()=>setList(Users),[Users])
+    return <RippleLayout className="main-chat-list-item">
+        <div className={`main-chat-list-item-img ${user.isOnline ? 'main-chat-list-item-online' : ''}`}>
+            <AspectRatio>
+                <ImageLoader
+                    src={`${imgsUrl}${user._id}.jpg?v=${user.profileImgVersion}`}
+                    loading={() => <i style={{ fontSize: '1.25rem' }} className="fal fa-user flex-center"></i>}
+                    error={() => <i style={{ fontSize: '1.25rem' }} className="fal fa-user flex-center"></i>}
+                />
+            </AspectRatio>
+        </div>
+        <div className="main-chat-list-item-info jc-sp-e fd-column">
+            <h4>{user.name}</h4>
+            <span>hey how you doin, you good?</span>
+        </div>
+        <span className="main-chat-list-item-time">07:11</span>
+    </RippleLayout>
+}
 
 
+const ChatsList = React.memo(({ Users }) => {
+
+    const [list, setList] = useState(Users)
+    useEffect(() => setList(Users), [Users])
+
+    const [filter, setFilter] = useState('')
+
+
+    useEffect(() => {
+        if (filter) {
+            setList(Users.filter((item) => {
+                return item.name.includes(filter)
+            }))
+        } else {
+            setList(Users);
+        }
+    }, [filter])
 
 
 
@@ -37,25 +70,18 @@ const ChatsList = props => {
         <div>
             <h3 style={{ padding: '5px 0.75em 0' }}>Peaple nearby</h3>
             <Input
+                value={filter} onChange={({ target }) => setFilter(target.value)}
                 icon={<i className="fal fa-search"></i>}
                 neumorphic={true} type="text" placeholder="Find"
             />
         </div>
         <Scrollbars autoHide autoHideTimeout={600} autoHideDuration={200} height={list.length * user_item_height}>
 
+
+
             {transitions((style, user, t, index) => (
                 <animated.div style={{ zIndex: list.length - index, ...style }}>
-                    {console.log(user)}
-                    <RippleLayout className="main-chat-list-item">
-                        <div className={`main-chat-list-item-img ${user.isOnline ? 'main-chat-list-item-online' : ''}`}>
-                            <img src={userImage} />
-                        </div>
-                        <div className="main-chat-list-item-info jc-sp-e fd-column">
-                            <h4>{user.name}</h4>
-                            <span>hey how you doin, you good?</span>
-                        </div>
-                        <span className="main-chat-list-item-time">07:11</span>
-                    </RippleLayout>
+                    <ListItem user={user} />
                 </animated.div>
             ))}
 
@@ -78,5 +104,5 @@ const ChatsList = props => {
 
         </Scrollbars>
     </div>
-}
+}, (pp, np) => pp.Users === np.Users)
 export default connect(state => { return { Users: state.Users } })(ChatsList)
