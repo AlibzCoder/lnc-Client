@@ -5,17 +5,21 @@ import Input from '../../utills/Input';
 import RippleLayout from '../../utills/RippleLayout';
 
 
-import { connect } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
 import { imgsUrl } from '../../consts';
 import AspectRatio from '../../utills/AspectRatio';
 import ImageLoader from '../../utills/ImageLoader';
+import { setChat } from '../../redux/actions';
 
 const user_item_height = 76;//3.75em + (1em padding + 1em margin) => 1em = 16px
 
 
-const ListItem = ({ user }) => {
+const ListItem = ({ user, selected }) => {
 
-    return <RippleLayout className="main-chat-list-item">
+    const dispatch = useDispatch()
+
+    return <RippleLayout className={`main-chat-list-item ${selected ? 'main-chat-list-item-selected' : ''}`}
+        onClick={() => dispatch(setChat(user))}>
         <div className={`main-chat-list-item-img ${user.isOnline ? 'main-chat-list-item-online' : ''}`}>
             <AspectRatio>
                 <ImageLoader
@@ -26,7 +30,7 @@ const ListItem = ({ user }) => {
             </AspectRatio>
         </div>
         <div className="main-chat-list-item-info jc-sp-e fd-column">
-            <h4>{user.name}</h4>
+            <h5>{user.name}</h5>
             <span>hey how you doin, you good?</span>
         </div>
         <span className="main-chat-list-item-time">07:11</span>
@@ -34,25 +38,17 @@ const ListItem = ({ user }) => {
 }
 
 
-const ChatsList = React.memo(({ Users }) => {
+const ChatsList = React.memo(({ setChat, Users, CurrentChat }) => {
+
 
     const [list, setList] = useState(Users)
     useEffect(() => setList(Users), [Users])
 
     const [filter, setFilter] = useState('')
 
+    useEffect(() => setList(filter ? Users.filter((item) => item.name.includes(filter)) : Users), [filter])
 
-    useEffect(() => {
-        if (filter) {
-            setList(Users.filter((item) => {
-                return item.name.includes(filter)
-            }))
-        } else {
-            setList(Users);
-        }
-    }, [filter])
-
-
+    useEffect(() => setFilter(''), [CurrentChat])
 
     const transitions = useTransition(list.map((data, i) => ({ ...data, y: i * user_item_height })),
         {
@@ -63,46 +59,31 @@ const ChatsList = React.memo(({ Users }) => {
             update: ({ y, height }) => ({ y, height }),
         }
     )
-
-
-
-    return <div className="main-chat-list-box">
-        <div>
-            <h3 style={{ padding: '5px 0.75em 0' }}>Peaple nearby</h3>
-            <Input
-                value={filter} onChange={({ target }) => setFilter(target.value)}
-                icon={<i className="fal fa-search"></i>}
-                neumorphic={true} type="text" placeholder="Find"
-            />
+    return <div className="main-chats-list">
+        <div className="main-chat-list-box">
+            <div>
+                <Input
+                    value={filter} onChange={({ target }) => setFilter(target.value)}
+                    icon={<i className="fal fa-search"></i>}
+                    neumorphic={true} type="text" placeholder="Find Peaple nearby"
+                />
+            </div>
+            <Scrollbars autoHide autoHideTimeout={600} autoHideDuration={200} height={list.length * user_item_height}>
+                {transitions((style, user, t, index) => (
+                    <animated.div style={{ zIndex: list.length - index, ...style }}>
+                        <ListItem user={user} selected={CurrentChat._id === user._id} />
+                    </animated.div>
+                ))}
+            </Scrollbars>
         </div>
-        <Scrollbars autoHide autoHideTimeout={600} autoHideDuration={200} height={list.length * user_item_height}>
-
-
-
-            {transitions((style, user, t, index) => (
-                <animated.div style={{ zIndex: list.length - index, ...style }}>
-                    <ListItem user={user} />
-                </animated.div>
-            ))}
-
-
-
-
-            {/* <RippleLayout className="main-chat-list-item main-chat-list-item-selected">
-            <div className="main-chat-list-item-img">
-                <img src={userImage} />
-            </div>
-            <div className="main-chat-list-item-info jc-sp-e fd-column">
-                <h4>Ali Banai</h4>
-                <span>hey how you doin, you good?</span>
-            </div>
-            <span className="main-chat-list-item-time">07:11</span>
-        </RippleLayout> */}
-
-
-
-
-        </Scrollbars>
     </div>
-}, (pp, np) => pp.Users === np.Users)
-export default connect(state => { return { Users: state.Users } })(ChatsList)
+}, (pp, np) => !(pp.Users !== np.Users || pp.CurrentChat !== np.CurrentChat))
+
+export default connect(
+    state => {
+        return {
+            Users: state.Users,
+            CurrentChat: state.CurrentChat
+        }
+    }
+)(ChatsList)

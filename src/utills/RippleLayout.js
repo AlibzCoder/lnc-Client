@@ -5,7 +5,8 @@ const RippleLayout = ({ children, ...rest }) => {
     const rippleRef = useRef(null);
     return <div {...rest}
         onMouseDown={e => rippleRef.current.start(e)}
-        onMouseUp={e => rippleRef.current.stop(e)}>
+        onMouseUp={e => rippleRef.current.stop(e)}
+        onBlur={e => rippleRef.current.stop(e)}>
         {children}
         <TouchRipple ref={rippleRef} center={false} />
     </div>

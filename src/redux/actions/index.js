@@ -1,4 +1,4 @@
-import {LOGIN_STATE, USER_INFO, USER_LOGOUT} from '../types';
+import {CURRENT_CHAT, LOGIN_STATE, USER_INFO, USER_LOGOUT} from '../types';
 import api from '../../api';
 import {setCookie, deleteAllCookies, jsonToFormData} from '../../utills';
 import history from '../../history';
@@ -62,7 +62,7 @@ export const UploadProfileImg = (ProfileImg)=>{
 
 
 
-
+export const setChat = chat => {return {type:CURRENT_CHAT,payload:chat}}
 
 
 

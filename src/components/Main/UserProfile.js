@@ -1,4 +1,3 @@
-import userImage from '../../assets/images/45936439.jpg'
 import { IconButton, Typography } from '@material-ui/core';
 import { connect } from 'react-redux';
 import { useEffect, useRef, useState } from 'react';
