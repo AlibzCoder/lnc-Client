@@ -10,6 +10,7 @@ import { withCookies } from 'react-cookie';
 import { useEffect, useState } from 'react';
 
 import innitSocket, { SocketIoContext } from '../api/socket-io'
+import PeerConnectionsProvider from '../utills/PeerConnectionsProvider';
 
 const App = (props) => {
 
@@ -31,15 +32,21 @@ const App = (props) => {
     },[props.Profile,pathname])
     useEvent(props.Logout, 'CALL_LOGOUT')
 
-    console.log(cookies.get("Authorization"))
+    
+
+
+
+
 
     return (
         <SocketIoContext.Provider value={socketIO}>
-            <Switch>
-                <Route path="/" exact component={Index} />
-                <Route path={["/Login", "/Signup"]} exact component={Login} />
-                <Route path="/Main" exact component={Main} />
-            </Switch>
+            <PeerConnectionsProvider>
+                <Switch>
+                    <Route path="/" exact component={Index} />
+                    <Route path={["/Login", "/Signup"]} exact component={Login} />
+                    <Route path="/Main" exact component={Main} />
+                </Switch>
+            </PeerConnectionsProvider>
         </SocketIoContext.Provider>
     )
 }

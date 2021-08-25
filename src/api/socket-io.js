@@ -4,8 +4,10 @@ import { callRefresh } from ".";
 import { apiBaseUrl } from "../consts";
 import { ALL_USERS } from "../redux/types";
 
-
+export const SOCKET_SEND_WEBRTC_OFFER = 'SOCKET_SEND_WEBRTC_OFFER';
 export const SocketIoContext = React.createContext(null);
+
+
 const innitSocket = (auth,dispatch) => {
     const socket = io(apiBaseUrl, {query: {token:auth}  }); // ,autoConnect: false
 
@@ -29,6 +31,9 @@ const innitSocket = (auth,dispatch) => {
     })
     socket.on('users',data=>dispatch({type:ALL_USERS,users:data}))
     socket.on('usersChange',data=>dispatch(data))
+
+    
+    document.addEventListener(SOCKET_SEND_WEBRTC_OFFER,({detail})=>socket.emit('webrtc_offer',detail))
 
     return socket;
 };
