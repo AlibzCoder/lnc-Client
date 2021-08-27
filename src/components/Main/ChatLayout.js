@@ -1,7 +1,7 @@
 import { IconButton } from '@material-ui/core';
 import { InputBase } from '@material-ui/core';
 import SendRounded from '@material-ui/icons/SendRounded';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Scrollbars from 'react-custom-scrollbars-2';
 import { connect } from 'react-redux';
 import { animated, useSpring } from 'react-spring';
@@ -9,6 +9,8 @@ import lonelySVG from '../../assets/images/lonely.svg'
 import { imgsUrl } from '../../consts';
 import AspectRatio from '../../utills/AspectRatio';
 import ImageLoader from '../../utills/ImageLoader';
+import { CHAT_DATA_CHANNEL } from '../../utills/PeerConnections';
+import { usePeer } from '../../utills/PeerConnectionsProvider';
 
 const NoChat = () => {
     return <div className="main-chat-box-empty">
@@ -18,29 +20,29 @@ const NoChat = () => {
 }
 
 const a = [
-    {
-        self: false,
-        message: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum",
-        new: false,
-    },
-    {
-        self: false,
-        message: 'Yeah',
-        new: false,
-    },
-    {
-        self: true,
-        message: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
-        new: false,
-    },
-    {
-        self: true,
-        message: 'Ok Nigga',
-        new: false,
-    }
+    // {
+    //     self: false,
+    //     message: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum",
+    //     new: false,
+    // },
+    // {
+    //     self: false,
+    //     message: 'Yeah',
+    //     new: false,
+    // },
+    // {
+    //     self: true,
+    //     message: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
+    //     new: false,
+    // },
+    // {
+    //     self: true,
+    //     message: 'Ok Nigga',
+    //     new: false,
+    // }
 ]
 
-const AnimatedMessage = ({message}) => {
+const AnimatedMessage = ({ message }) => {
     return <div className={`message-box ${message.self ? '' : 'message-box-peer'}`}>
         <div className="message">
             <p>{message.message}</p>
@@ -51,17 +53,45 @@ const AnimatedMessage = ({message}) => {
 
 const Chat = ({ CurrentChat }) => {
 
-    const chatLayoutRef = useRef(null)
 
-    const [list, setList] = useState(a)
+    const Peer = usePeer(CurrentChat._id);
+    const [ChatDataChannel, setChatDataChannel] = useState(null)
+
+    const checkChatDataChannel = () => {
+        console.log(Peer.connectionState, !ChatDataChannel)
+        if (Peer && Peer.connectionState === 'connected' && !ChatDataChannel) setChatDataChannel(Peer[CHAT_DATA_CHANNEL])
+    }
+    const onPeerConnectionStateChange = e => {
+        checkChatDataChannel()
+    }
+    const onChatDataChannelMessage = e => {
+        if (e.type === "message") {
+            addToList({ self: false, message: e.data, new: true });
+        }
+    }
+    useEffect(() => {
+        checkChatDataChannel()
+        if (Peer) Peer.onconnectionstatechange = onPeerConnectionStateChange
+    }, [Peer.connectionState])
+
+    useEffect(() => {
+        if (ChatDataChannel) ChatDataChannel.onmessage = onChatDataChannelMessage;
+    })
+
+    console.log(Peer)
+
+
+
+
+
+    const chatLayoutRef = useRef(null)
+    const [list, setList] = useState([])
 
     const addToList = message => {
         setList([...list, ...[message]])
-        setTimeout(()=>{
+        setTimeout(() => {
             chatLayoutRef.current.parentElement.scrollTop = chatLayoutRef.current.parentElement.scrollHeight
-        },10)
-
-
+        }, 10)
     }
 
     const onMessageSubmit = e => {
@@ -71,10 +101,11 @@ const Chat = ({ CurrentChat }) => {
             message: e.target.querySelector('input').value,
             new: true,
         });
+        ChatDataChannel.send(e.target.querySelector('input').value)
         e.target.querySelector('input').value = ''
     }
 
-    
+
 
     return <div className="main-chat">
         <div className="main-chat-topbar">
@@ -97,7 +128,7 @@ const Chat = ({ CurrentChat }) => {
 
         <Scrollbars autoHide autoHideTimeout={600} autoHideDuration={200}>
             <div className="chat-layout" ref={chatLayoutRef}>
-                {list.map(message =><AnimatedMessage message={message} />)}
+                {list.map(message => <AnimatedMessage message={message} />)}
             </div>
         </Scrollbars>
 
