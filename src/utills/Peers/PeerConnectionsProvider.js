@@ -1,8 +1,8 @@
 import React, { useContext, useEffect, useRef } from "react";
 import { useState } from "react";
 import { connect } from "react-redux";
-import { useEvent } from ".";
-import { SocketIoContext } from "../api/socket-io";
+import { useEvent } from "..";
+import { SocketIoContext } from "../../api/socket-io";
 import PeerConnections, { CHAT_DATA_CHANNEL } from "./PeerConnections";
 
 export const PeerConnectionsContext = React.createContext(null);
