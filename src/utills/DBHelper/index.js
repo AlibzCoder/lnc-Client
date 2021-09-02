@@ -39,8 +39,9 @@ export class DBHelper {
                 //CREATE COLLECTIONS IF DONT EXISTS
                 try {
                     event.target.result.createObjectStore(FILES_COLLECITON);
-                    let chatObjectStore = event.target.result.createObjectStore(CHAT_COLLECITON, { keyPath: ['chatId','id']});
+                    let chatObjectStore = event.target.result.createObjectStore(CHAT_COLLECITON, { keyPath: ['chatId', 'index'] });
                     chatObjectStore.createIndex('chatId', 'chatId');
+                    chatObjectStore.createIndex('id', 'id');
                 } catch (err) { }
 
             };
@@ -63,49 +64,59 @@ export class DBHelper {
             if (message) {
                 let chatStore = this.getObjectStore(CHAT_COLLECITON);
                 if (chatStore) {
-                    message = {...message,id:message.id ? message.id : uuidv4()};
+                    message = { ...message, ...{ id: message.id ? message.id : uuidv4() ,
+                             date : message.date ? message.date : new Date() } };
+
                     // uuidv4 generates random uuid like '1b9d6bcd-bbfd-4b2d-9b5d-ab8dfbbd4bed'
-                    let request = chatStore.add(message);
-                    request.onsuccess = e => resolve(message)
-                    // request.onerror = e => {
-                    //     //onerror handles duplicate id and calles the function again (likes thats ever gonna happer :) )
-                    //     if(e.target.error.name === 'ConstraintError') resolve(this.addMessage(message))
-                    //     else reject();
-                    // }
+                    this.getLastChatIndex(chatStore, message.chatId).then(index => {
+
+                        let request = chatStore.add({ ...message, ...{ index: index + 1 } });
+                        request.onsuccess = e => resolve(message)
+                        // request.onerror = e => {
+                        //     //onerror handles duplicate id and calles the function again (likes thats ever gonna happer :) )
+                        //     if(e.target.error.name === 'ConstraintError') resolve(this.addMessage(message))
+                        //     else reject();
+                        // }
+                    })
                 } else reject()
             } else reject()
         })
     }
 
-    // getLastChatId(chatStore,chatId) {
-    //     if (!chatStore) chatStore = this.getObjectStore(CHAT_COLLECITON);
-    //     return new Promise((resolve)=>{
-    //         chatStore.index('chatId').openCursor(chatId, 'prev').onsuccess = function (event) {
-    //             if (event.target.result) resolve(event.target.result.value.id)
-    //             resolve(0)
-    //         };
-    //     })
-    // }
+    getLastChatIndex(chatStore, chatId) {
+        if (!chatStore) chatStore = this.getObjectStore(CHAT_COLLECITON);
+        return new Promise((resolve) => {
+            chatStore.index('chatId').openCursor(chatId, 'prev').onsuccess = function (event) {
+                if (event.target.result) resolve(event.target.result.value.index)
+                resolve(0)
+            };
+        })
+    }
 
-    getMessagesByChatId(chatId,skip,take) {
+    getMessagesByChatId(chatId, skip, take) {
         let chatStore = this.getObjectStore(CHAT_COLLECITON);
-        return new Promise((resolve,reject)=>{
+        return new Promise((resolve, reject) => {
             let messages = [];
-            let cursorInstance = chatStore.index('chatId').openCursor(
-                IDBKeyRange.bound(
-                    [chatId,skip*take],
-                    [chatId,(skip*take) + take]
+            this.getLastChatIndex(chatStore,chatId).then(index=>{
+
+                let cursorInstance = chatStore.openCursor(
+                    IDBKeyRange.bound(
+                        [chatId, index - ((skip * take) + take)],
+                        [chatId, index - (skip * take)]
+                    )
                 )
-            )
-            cursorInstance.onsuccess = e => {
-                let cursor = e.target.result;
-                if(cursor){
-                    messages.push(cursor.value);
-                    cursor.continue();
+                
+
+                cursorInstance.onsuccess = e => {
+                    let cursor = e.target.result;
+                    if (cursor) {
+                        messages.push(cursor.value);
+                        cursor.continue();
+                    }
+                    else resolve(messages)
                 }
-                else resolve(messages)
-            }
-            cursorInstance.onerror = e => reject(e)
+                cursorInstance.onerror = e => reject(e)
+            }).catch(e=>reject(e))
         })
     }
 

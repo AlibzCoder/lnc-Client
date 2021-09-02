@@ -1,9 +1,11 @@
 import React, { useContext, useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { DBHelper } from ".";
+import { useEvent } from "..";
 
 export const DBcontext = React.createContext(null);
 export const DB_VERSION = 1;
+
 
 export const useIDB = () => useContext(DBcontext)
 
@@ -18,7 +20,6 @@ const IDBProviderComponent = ({ children }) => {
     }, [dbHelper])
 
 
-    console.log(dbHelper);
 
     return <DBcontext.Provider value={dbHelper}>{children}</DBcontext.Provider>
 }

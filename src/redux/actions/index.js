@@ -1,4 +1,4 @@
-import {CURRENT_CHAT, LOGIN_STATE, USER_INFO, USER_LOGOUT} from '../types';
+import {ADD_MESSAGE_TO_END, CURRENT_CHAT, EMPTY_MESSAGES, LOAD_MESSAGES, LOGIN_STATE, MESSAGES_STATE, USER_INFO, USER_LOGOUT} from '../types';
 import api from '../../api';
 import {setCookie, deleteAllCookies, jsonToFormData} from '../../utills';
 import history from '../../history';
@@ -66,7 +66,10 @@ export const setChat = chat => {return {type:CURRENT_CHAT,payload:chat}}
 
 
 
-
+export const loadMessages = (take,dbList)=>{return {type:LOAD_MESSAGES,payload:{take,dbList}}}
+export const messagesState = (state)=>{return {type:MESSAGES_STATE,payload:{state}}}
+export const addMessage = (message)=>{return {type:ADD_MESSAGE_TO_END,payload:{message}}}
+export const emptyMessages = ()=>{return {type:EMPTY_MESSAGES}}
 
 
 

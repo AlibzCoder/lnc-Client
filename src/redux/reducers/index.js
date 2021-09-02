@@ -5,6 +5,7 @@ import SkipTakeReducer from './SkipTakeReducer';
 import Login from './Login';
 import Users from './Users';
 import CurrentChat from './CurrentChat';
+import Messages from './Messages';
 
 
 
@@ -12,7 +13,8 @@ const appReducer = combineReducers({
     LoginState:Login,
     Profile:StatefullReducer(USER_INFO),
     Users:Users,
-    CurrentChat:CurrentChat
+    CurrentChat:CurrentChat,
+    Messages:Messages
 })
 
 export default (state, action) => {

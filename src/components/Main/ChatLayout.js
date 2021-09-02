@@ -5,8 +5,10 @@ import { useEffect, useRef, useState } from 'react';
 import Scrollbars from 'react-custom-scrollbars-2';
 import { connect, useSelector } from 'react-redux';
 import { animated, useSpring } from 'react-spring';
+import { bindActionCreators } from 'redux';
 import lonelySVG from '../../assets/images/lonely.svg'
 import { imgsUrl } from '../../consts';
+import { addMessage, loadMessages, messagesState, emptyMessages } from '../../redux/actions';
 import AspectRatio from '../../utills/AspectRatio';
 import { useIDB } from '../../utills/DBHelper/DBProvider';
 import ImageLoader from '../../utills/ImageLoader';
@@ -43,24 +45,23 @@ const a = [
     // }
 ]
 
-const Message = ({ message }) => {
-    return <div className={`message-box ${message.self ? '' : 'message-box-peer'}`}>
+const Message = ({ self, date, type, content }) => {
+    return <div className={`message-box ${self ? '' : 'message-box-peer'}`}>
         <div className="message">
-            <p>{message.message}</p>
+            <p>{content}</p>
             <span>08:50</span>
         </div>
     </div>
 }
 
-const Chat = ({ CurrentChat }) => {
+const ChatComponent = props => {
 
-    const {Profile} = useSelector(state => {return {Profile: state.Profile}})
-
+    const { CurrentChat, Messages, Profile, loadMessages, messagesState, addMessage, emptyMessages } = props
     const dbHelper = useIDB()
-    console.log(dbHelper)
-
     const Peer = usePeer(CurrentChat._id);
+
     const [ChatDataChannel, setChatDataChannel] = useState(null)
+
 
 
     const checkChatDataChannel = () => {
@@ -71,13 +72,22 @@ const Chat = ({ CurrentChat }) => {
     }
     const onChatDataChannelMessage = e => {
         if (e.type === "message") {
-            dbHelper.addMessage({
+            let { content, id, type } = e.data;
+            let message = {
                 chatId: CurrentChat._id,
                 senderId: CurrentChat._id,
+                type: type,
+                content: content,
                 date: new Date(),
-                type: 'text',
-                content: e.data
-            }).then(() => addToList({ self: false, message: e.data, new: true }))
+                id: id
+            }
+            dbHelper.addMessage(message).then(() => {
+                addMessage(message)
+
+                setTimeout(() => {
+                    scrollToBottom()
+                }, 10)
+            })
         }
     }
     useEffect(() => {
@@ -87,49 +97,68 @@ const Chat = ({ CurrentChat }) => {
 
     useEffect(() => {
         if (ChatDataChannel) ChatDataChannel.onmessage = onChatDataChannelMessage;
-    },[ChatDataChannel,onChatDataChannelMessage])
+    }, [ChatDataChannel, onChatDataChannelMessage])
 
 
+
+
+
+    const ReadMessages = () => {
+        let TAKE = 20;
+
+        if (!dbHelper) return;
+        if (Messages.endOfList) return;
+        if (Messages.state === 1) return;
+
+        messagesState(1);
+        dbHelper.getMessagesByChatId(CurrentChat._id, Messages.skip, TAKE)
+            .then((list) => loadMessages(TAKE, list))
+    }
+
+
+
+    useEffect(() => {
+        emptyMessages();
+        ReadMessages();
+    }, [CurrentChat, dbHelper])
 
 
 
 
     const chatLayoutRef = useRef(null)
-    const [list, setList] = useState([])
-
-
     const scrollToBottom = () => chatLayoutRef.current.parentElement.scrollTop = chatLayoutRef.current.parentElement.scrollHeight
 
 
-    const addToList = message => {
-        setList([...list, ...[message]])
+    useEffect(() => setTimeout(() => {
+        scrollToBottom()
+    }, 10), [Messages.list])
 
-    }
 
     const onMessageSubmit = e => {
         e.preventDefault();
-
+        let input = e.target.querySelector('input');
 
         dbHelper.addMessage({
             chatId: CurrentChat._id,
             senderId: Profile.data._id,
-            date: new Date(),
             type: 'text',
-            content: e.target.querySelector('input').value
+            content: input.value
         }).then((message) => {
-            addToList({
-                self: true,
-                message: e.target.querySelector('input').value,
-                new: true,
-            });
+            addMessage(message);
 
-            ChatDataChannel.send({
-                id:id,
-                type:'text',
-                content:e.target.querySelector('input').value
-            })
-            e.target.querySelector('input').value = ''
+            if (Peer.connectionState === 'connected') {
+                ChatDataChannel.send({
+                    id: message.id,
+                    type: 'text',
+                    content: input.value
+                })
+            }
 
+            input.value = ''
+
+            setTimeout(() => {
+                scrollToBottom()
+            }, 10)
         })
     }
 
@@ -155,7 +184,7 @@ const Chat = ({ CurrentChat }) => {
 
         <Scrollbars autoHide autoHideTimeout={600} autoHideDuration={200}>
             <div className="chat-layout" ref={chatLayoutRef}>
-                {list.map(message => <Message message={message} />)}
+                {Messages.list.map(m => <Message {...m} self={Profile.data._id === m.senderId} />)}
             </div>
         </Scrollbars>
 
@@ -170,7 +199,21 @@ const Chat = ({ CurrentChat }) => {
             </IconButton>
         </form>
     </div>
+
+
 }
+
+const Chat = connect(
+    state => {
+        return {
+            Messages: state.Messages,
+            Profile: state.Profile
+        }
+    },
+    dispatch => bindActionCreators({ loadMessages, messagesState, addMessage, emptyMessages }, dispatch)
+)(ChatComponent)
+
+
 
 
 
@@ -184,7 +227,9 @@ const ChatLayout = ({ CurrentChat }) => {
 export default connect(
     state => {
         return {
-            CurrentChat: state.CurrentChat
+            CurrentChat: state.CurrentChat,
+            Messages: state.Messages
         }
-    }
+    },
+    dispatch => bindActionCreators({ loadMessages, messagesState, addMessage }, dispatch)
 )(ChatLayout);
